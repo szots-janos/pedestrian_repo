@@ -92,6 +92,9 @@ for i=1:runs
     end
 end
 figure(7)
-imagesc(Vbins(1:end),Dbins,log(M(:,1:end)))
+imagesc(Vbins(1:end),Dbins,M(:,1:end))
+set(gca,'ColorScale','log')
 xlabel('Vehicle velocity [m/s]')
 ylabel('Pedestrian distance [m]')
+h = colorbar;
+set(get(h,'label'),'string','Occurences over all simulations');

@@ -133,7 +133,7 @@ for round_cntr = 1:runs
         min(min(squeeze(vecnorm(XP(1:2,:,:)-XE(1:2,:,:))))))
     if runs==1
         time_plot(dt, XP, XE);
-        traj_plot(XP, XE);
+        traj_plot(XP, XE, target);
     end
 end
 fprintf("Average time (successful runs):\t%.6f\n",mean(results(results>0)))
@@ -200,10 +200,11 @@ set(dotE,'YData',XE(2,:));
 end
 end
 
-function traj_plot(XP, XE)
+function traj_plot(XP, XE, target)
 % plot of agents' trajectories
 
 figure(2), clf, hold on
+plot(target(1), target(2), 'k^')
 plot(squeeze(XE(1,1,:)),squeeze(XE(2,1,:)), 'color', 'b')
 for i=1:size(XP, 2)
     plot(squeeze(XP(1,i,:)), squeeze(XP(2,i,:)), 'color', 'r')
@@ -216,7 +217,7 @@ hold off
 xlabel('x [m]')
 ylabel('y [m]')
 axis equal
-legend({'evader', 'pursuers'}, 'location', 'southwest')
+legend({'target', 'evader', 'pursuers'}, 'location', 'southwest')
 end
 
 

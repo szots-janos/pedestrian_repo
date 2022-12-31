@@ -38,8 +38,16 @@ classdef dubins < handle
                 % acceleration has default value
                 a = 0; 
             end
-            v_new = min(max(0, v + a*dt), this.v_max);
-            distance = (v + v_new) / 2 * dt;
+            if abs(a) > eps
+                v_new = min(max(0, v + a*dt), this.v_max);
+                acceleration_time = (v_new - v) / a;
+                distance = (v + v_new) / 2 * acceleration_time + v_new * (dt - acceleration_time);
+            else
+                v_new = v;
+                distance = v_new * dt;
+            end
+            
+            if isnan(distance), keyboard, end
             
             % turn
             if isfield(u, 'steering') 

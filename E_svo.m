@@ -2,12 +2,16 @@ classdef E_svo < agent
     properties
         XP_prev
         LOG % for debug purpose
+        args
+       
     end
     
     methods
         function this = E_svo(varargin)
             this=this@agent(varargin{1:3});
             args = varargin{4};
+            this.args = args;
+            
         end
         function new_round(this,x0)
             this.x=x0;
@@ -29,6 +33,7 @@ classdef E_svo < agent
                 this.XP_prev = XP;
             end
             
+           
             % SVO
             % input: evader state, XE, 4x1 vector: x, y, phi, v
             %        pursuer states XP, 2xNP or 4xNP vector, 
@@ -38,8 +43,69 @@ classdef E_svo < agent
             
             % ALGORITHM HERE
             
+          %  aa = this.args.T_SVO;
+          %  a = this.parameters.dc;
+          %  u.acceleration = 1; % relative
+          %  u.steering = 1;
+          %  b = this.f.update(XE,u,this.parameters.dt);
+            
+            
+            
+            velx = XE(4)*cos(XE(3));
+            vely = XE(4)*sin(XE(3));
+            angleRobotVelocity = atan2(vely,velx);
+            MAXrobotvelocity = this.parameters.vE;
+            obstaclesPositionsX = XP(1,:);
+            obstaclesPositionsY = XP(2,:);
+            obstaclesVelocitiesX = pursuer_velocities(1,:);
+            obstaclesVelocitiesY = pursuer_velocities(2,:);
+            obstaclesRadius = ones(1,this.parameters.NP)*this.parameters.dc;
+            robotRadius = 0;
+            goalPositionX = this.parameters.target(1);
+            goalPositionY = this.parameters.target(2);
+            investigatedVelocityAngle = pi/6;
+            T_svo = 1.4;
+            robotacc_backward = 0;
+            drawingTest = 0;
+            language = 2;
+            xlimits = [min(min(obstaclesPositionsX), goalPositionX), max(max(obstaclesPositionsX),goalPositionX)];
+            ylimits = [min(min(obstaclesPositionsY),goalPositionY), max(max(obstaclesPositionsY),goalPositionY)];
+            distancesRobotObstacles = distance(XE(1), XE(2), obstaclesPositionsX, obstaclesPositionsY );
+            
+            if (XE(1)==0 && XE(2)==0)
+                use_rules = ones(1,this.parameters.NP);
+            else
+                [Tcpa,Dcpa] = robot_obstacle_contact(XE(1),XE(2),velx,vely,obstaclesPositionsX,obstaclesPositionsY,obstaclesVelocitiesX,obstaclesVelocitiesY);
+                for iObstacle=1:this.parameters.NP
+                  if( ((Tcpa(iObstacle)>0) &&(Tcpa(iObstacle)<10) && (Dcpa(iObstacle)<10)) || (distancesRobotObstacles(iObstacle)<10) )  %(3*maxsebessegnagysag*t)
+                    use_rules(1,iObstacle) = 1;
+                  else
+                    use_rules(1,iObstacle) = 0;
+                  end
+                end
+            end
+          
+          
+             % use_rules = ones(1,this.parameters.NP);
+            
+             C_beta_distance = 0.5;
+            C_alfa = 0.5;
+%             if(min(distancesRobotObstacles)< 3.5)
+%             C_beta_distance = 0;
+%             C_alfa = 1;
+%             else
+%             C_beta_distance = 1;
+%             C_alfa = 0;
+%             end
+            
+            [robotvelocity_x,robotvelocity_y] = getRobotVelocitySVOmethod(XE(1),...
+            XE(2), velx, vely, MAXrobotvelocity,  obstaclesPositionsX, obstaclesPositionsY, obstaclesVelocitiesX, obstaclesVelocitiesY,...
+            obstaclesRadius, robotRadius, goalPositionX, goalPositionY, investigatedVelocityAngle, T_svo, robotacc_backward, use_rules, drawingTest, language,xlimits,ylimits, C_beta_distance, C_alfa);
+            
+        velx = robotvelocity_x - XE(1);
+        vely = robotvelocity_y - XE(2);
             % generate controls
-            this.u.velocity = [-3; 2]; 
+            this.u.velocity = [velx; vely]; 
             
             % debug data
             if this.parameters.runs == 1 % do not store debug data for multiple runs

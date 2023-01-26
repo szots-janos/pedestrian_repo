@@ -2,10 +2,9 @@ clc
 clear all
 dbstop if error
 
-%Minimal distance from the pursuers:	1.703876
-%Average time (successful runs):	40.200000
+
 %% global params
-random_seed = 62; % to test one specific setup - works only if runs==1
+random_seed = 67; % to test one specific setup - works only if runs==1
 dt = .1;
 dc = 2; % capture distance (= obstacle+vehicle radius)
 
@@ -23,7 +22,7 @@ vE = 5; % maximum speed, m/s
 rE = 5; % turning radius, m, only used in dubins model
 aE = 2; % maximum acceleration, m/s2, only used in dubins model
 e_model = @dubins;
-e_strategy = @E_ebg;
+e_strategy = @E_svo;
 e_args.target_p=0.1; % apf agent parameter
 e_args.rho_mult=2; % apf agent parameter
 e_args.accel_mult=2; % apf agent parameter

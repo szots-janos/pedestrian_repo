@@ -15,7 +15,7 @@ rP = 1; % turning radius, m, only used in dubins model
 aP = 2; % maximum acceleration, m/s2, only used in dubins model
 p_model = @omni;
 p_strategy = @P_random;
-p_args.avg_time = 4; % P_random: average direction change interval
+p_args.avg_time = 3; % P_random: average direction change interval
 
 % evader params
 vE = 5; % maximum speed, m/s
@@ -33,13 +33,14 @@ e_args.safety_distance = dc * 2; % ebg parameter
 % start params
 min_dist = 10;
 max_dist = 50;
+start_distribution = 1; % 0: circular, 1: rectangle
 
 % end params
 target = [150;0];
 Tmax = 200;
 
 % run params
-runs = 1;
+runs = 100;
 max_time = 10000; % max runtime in seconds
 
 % save - careful, we do not check for overwrite!
@@ -80,7 +81,7 @@ for round_cntr = 1:runs
     else
         rng(round_cntr);
     end
-    [x0P,x0E]=starting_position(min_dist, max_dist, P, E);
+    [x0P,x0E]=starting_position(min_dist, max_dist, start_distribution, P, E);
     for i=1:NP, P(i).new_round(x0P(:,i)); end
     E.new_round(x0E);
     round_result = nan;
@@ -144,20 +145,25 @@ if runs>1 && length(save_filename)>1
 end
 
 %% nested functions
-function [x0P,x0E]=starting_position(min_dist, max_dist, P, E)
+function [x0P,x0E]=starting_position(min_dist, max_dist, start_distribution, P, E)
+% pursuers
 NP=length(P);
 d0P=rand(1,NP)*(max_dist - min_dist) + min_dist;
-th=linspace(-pi,pi,NP);
-
+if start_distribution == 0
+    th=linspace(-pi,pi,NP);
+    x0P=[cos(th).*d0P;sin(th).*d0P];
+else
+    x0P=[d0P; (rand(1,NP) - 0.5)*(max_dist - min_dist)];
+end
 if strcmp(P(1).f.name,'dubins')
-%     x0P=[cos(th).*d0P;sin(th).*d0P;rand(1,NP)*2*pi;zeros(1,NP)]; % random heading
-    x0P=[cos(th).*d0P;sin(th).*d0P;zeros(1,NP);zeros(1,NP)]; % zero heading
+%     x0P=[x0P;rand(1,NP)*2*pi;zeros(1,NP)]; % random heading
+    x0P=[x0P;zeros(1,NP);zeros(1,NP)]; % zero heading
     for i=1:NP
         x0P(end,i)=P(i).f.v_max;
     end
-else
-    x0P=[cos(th).*d0P;sin(th).*d0P];
 end
+
+%evader
 if strcmp(E(1).f.name,'dubins') % facing?
     x0E=[0;0;0;0];
 else

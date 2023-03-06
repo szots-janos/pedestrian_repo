@@ -56,31 +56,56 @@ end
 plot([0,0],[0,S],'r')
 plot(0,0,'r^')
 plot(0,S,'rx')
-xlabel('x [m]')
-ylabel('y [m]')
-legend(LI,LT)
+xlabel('x [m]', 'FontSize', 8)
+ylabel('y [m]', 'FontSize', 8)
+l=legend(LI,LT, 'Location','NorthEast')
+l.FontSize =8
 axis equal
+filename = [folder 'contour_5_25' '.fig'];
+saveas(figure(1),[pwd  filename]);
+filename = [folder 'contour_5_25' '.pdf'];
+% filename = fullfile([pwd filename])
+set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
+exportgraphics(gcf, [pwd filename]);
+
+
+
+
 
 %% time hist
-figure(8),clf,hold on
-load apf_01_2_2
+folder = '/Figures/';
+figure(1),clf,hold on
+load APF_method
 histogram(results(results>0),20,'facealpha',0.5)
 apf_successful = sum(results>0);
 apf_fastest = min(results(results>0));
-load ebg
+load SVO_methodBangBang
+histogram(results(results>0),20,'facealpha',0.5)
+svo_successful = sum(results>0);
+svo_fastest = min(results(results>0));
+load EBG_method
 histogram(results(results>0),20,'facealpha',0.5)
 ebg_successful = sum(results>0);
 ebg_fastest = min(results(results>0));
 XL=xlim;
-xlim([10 * floor(min(ebg_fastest, apf_fastest)/10),XL(2)]) % min time=30.8 s
-legend({"APF, " + num2str(apf_successful) + " runs", ...
-    "EBG, " + num2str(ebg_successful) + " runs"},...
+xlim([10 * floor(min(ebg_fastest,min(apf_fastest,svo_fastest))/10),XL(2)]) % min time=30.8 s
+l = legend({"APF, " + num2str(apf_successful) + " runs", ...
+    "SVO, " + num2str(svo_successful) + " runs", "EBG, " + num2str(ebg_successful) + " runs"},...
     'Location','NorthEast')
-xlabel('Elapsed time [s]')
-ylabel('Rounds [-]')
+l.FontSize = 8;
+xlabel('Elapsed time [s]', 'FontSize', 8)
+ylabel('Rounds [-]', 'FontSize', 8)
+filename = [folder 'Hist' '.fig'];
+saveas(figure(1),[pwd  filename]);
+filename = [folder 'Hist' '.pdf'];
+% filename = fullfile([pwd filename])
+set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
+exportgraphics(gcf, [pwd filename]);
+
+
 
 %% heatmap plot
-load apf_01_2_2
+load APF_method
 Nbin=50;
 Dbins=linspace(0,10,Nbin+1);
 Vbins=linspace(0,5,Nbin+1);
@@ -91,10 +116,16 @@ for i=1:runs
             repmat(velocity_distance_data{i}(:,1),1,parameters.NP), Dbins, Vbins);
     end
 end
-figure(7)
+figure(1)
 imagesc(Vbins(1:end),Dbins,M(:,1:end))
 set(gca,'ColorScale','log')
-xlabel('Vehicle velocity [m/s]')
-ylabel('Pedestrian distance [m]')
+xlabel('Vehicle velocity [m/s]', 'FontSize', 8)
+ylabel('Pedestrian distance [m]', 'FontSize', 8)
 h = colorbar;
-set(get(h,'label'),'string','Occurences over all simulations');
+set(get(h,'label'),'string','Occurences over all simulations', 'FontSize', 8);
+filename = [folder 'HeatMap_EBG' '.fig'];
+saveas(figure(1),[pwd  filename]);
+filename = [folder 'HeatMap_EBG' '.pdf'];
+% filename = fullfile([pwd filename])
+set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
+exportgraphics(gcf, [pwd filename]);

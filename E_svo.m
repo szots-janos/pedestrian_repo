@@ -77,7 +77,7 @@ classdef E_svo < agent
             else
                 [Tcpa,Dcpa] = robot_obstacle_contact(XE(1),XE(2),velx,vely,obstaclesPositionsX,obstaclesPositionsY,obstaclesVelocitiesX,obstaclesVelocitiesY);
                 for iObstacle=1:this.parameters.NP
-                  if( ((Tcpa(iObstacle)>0) &&(Tcpa(iObstacle)<10) && (Dcpa(iObstacle)<10)) || (distancesRobotObstacles(iObstacle)<10) )  %(3*maxsebessegnagysag*t)
+                  if( ((Tcpa(iObstacle)>0) &&(Tcpa(iObstacle)<10) && (Dcpa(iObstacle)<10)) || (distancesRobotObstacles(iObstacle)<15) )  %(3*maxsebessegnagysag*t)
                     use_rules(1,iObstacle) = 1;
                   else
                     use_rules(1,iObstacle) = 0;
@@ -85,19 +85,21 @@ classdef E_svo < agent
                 end
             end
           
-          
+%           if sum(use_rules)
+%               MAXrobotvelocity = MAXrobotvelocity-2;
+%           end
              % use_rules = ones(1,this.parameters.NP);
             
-             C_beta_distance = 0.5;
-            C_alfa = 0.5;
-%             if(min(distancesRobotObstacles)< 3.5)
-%             C_beta_distance = 0;
-%             C_alfa = 1;
-%             else
-%             C_beta_distance = 1;
-%             C_alfa = 0;
-%             end
-            
+%             C_beta_distance = 0.2;
+%             C_alfa = 0.8;
+            if(min(distancesRobotObstacles)< 10)
+            C_beta_distance = 0;
+            C_alfa = 1;
+            else
+            C_beta_distance = 1;
+            C_alfa = 0;
+            end
+%             
             [robotvelocity_x,robotvelocity_y] = getRobotVelocitySVOmethod(XE(1),...
             XE(2), velx, vely, MAXrobotvelocity,  obstaclesPositionsX, obstaclesPositionsY, obstaclesVelocitiesX, obstaclesVelocitiesY,...
             obstaclesRadius, robotRadius, goalPositionX, goalPositionY, investigatedVelocityAngle, T_svo, robotacc_backward, use_rules, drawingTest, language,xlimits,ylimits, C_beta_distance, C_alfa);

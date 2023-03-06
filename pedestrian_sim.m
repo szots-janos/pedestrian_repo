@@ -4,7 +4,7 @@ dbstop if error
 
 
 %% global params
-random_seed = 67; % to test one specific setup - works only if runs==1
+random_seed = 4; % to test one specific setup - works only if runs==1
 dt = .1;
 dc = 2; % capture distance (= obstacle+vehicle radius)
 
@@ -22,8 +22,8 @@ vE = 5; % maximum speed, m/s
 rE = 5; % turning radius, m, only used in dubins model
 aE = 2; % maximum acceleration, m/s2, only used in dubins model
 e_model = @dubins;
-e_strategy = @E_svo;
-e_args.target_p=0.1; % apf agent parameter
+e_strategy = @E_apf;
+e_args.target_p=0.01; % apf agent parameter
 e_args.rho_mult=2; % apf agent parameter
 e_args.accel_mult=2; % apf agent parameter
 e_args.reaction_distance = dc * 10; % ebg parameter
@@ -44,7 +44,7 @@ runs = 100;
 max_time = 10000; % max runtime in seconds
 
 % save - careful, we do not check for overwrite!
-save_filename = ''; % set to '' to skip saving. use single ' marks!
+save_filename = 'APF_method'; % set to '' to skip saving. use single ' marks!
 
 %% init
 parameters.NP = NP;
@@ -137,7 +137,7 @@ for round_cntr = 1:runs
     end
 end
 fprintf("Average time (successful runs):\t%.6f\n",mean(results(results>0)))
-fprintf("Unsuccessful runs:\t%.6f\n",length(results(results<0)))
+fprintf("Unsuccessful runs:\t%.6f\n",(length(results(results<0))+ sum(isnan(results)) ) )
 
 %% save
 if runs>1 && length(save_filename)>1
@@ -219,10 +219,18 @@ for i=1:size(XP, 2)
     plot(squeeze(XP(1,i,end)),squeeze(XP(2,i,end)),'.','color','k')
 end
 hold off
-xlabel('x [m]')
-ylabel('y [m]')
+xlabel('x [m]', 'FontSize', 8)
+ylabel('y [m]', 'FontSize', 8)
 axis equal
-legend({'target', 'evader', 'pursuers'}, 'location', 'southwest')
+l=legend({'target', 'evader', 'pursuers'}, 'location', 'southwest')
+l.FontSize = 8;
+folder = '/Figures/';
+filename = [folder 'SVO_sim' '.fig'];
+saveas(figure(1),[pwd  filename]);
+filename = [folder 'SVO_sim' '.pdf'];
+% filename = fullfile([pwd filename])
+set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
+exportgraphics(gcf, [pwd filename]);
 end
 
 

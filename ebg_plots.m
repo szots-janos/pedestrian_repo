@@ -79,29 +79,55 @@ load APF_method
 histogram(results(results>0),20,'facealpha',0.5)
 apf_successful = sum(results>0);
 apf_fastest = min(results(results>0));
+l = legend({"APF, " +  num2str(apf_successful) + " runs"},'Location','NorthEast')
+l.FontSize = 8;
+xlabel('Elapsed time [s]', 'FontSize', 8)
+ylabel('Rounds [-]', 'FontSize', 8)
+filename = [folder 'Hist_APF' '.fig'];
+saveas(figure(1),[pwd  filename]);
+filename = [folder 'Hist_APF' '.pdf'];
+% filename = fullfile([pwd filename])
+set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
+exportgraphics(gcf, [pwd filename]);
+close all
+
+
+
 load SVO_methodBangBang
 histogram(results(results>0),20,'facealpha',0.5)
 svo_successful = sum(results>0);
 svo_fastest = min(results(results>0));
+l = legend({"SVO, " + num2str(svo_successful) + " runs"}, 'Location','NorthEast')
+l.FontSize = 8;
+xlabel('Elapsed time [s]', 'FontSize', 8)
+ylabel('Rounds [-]', 'FontSize', 8)
+filename = [folder 'Hist_SVO' '.fig'];
+saveas(figure(1),[pwd  filename]);
+filename = [folder 'Hist_SVO' '.pdf'];
+% filename = fullfile([pwd filename])
+set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
+exportgraphics(gcf, [pwd filename]);
+close all
+
+
+
 load EBG_method
 histogram(results(results>0),20,'facealpha',0.5)
 ebg_successful = sum(results>0);
 ebg_fastest = min(results(results>0));
 XL=xlim;
 xlim([10 * floor(min(ebg_fastest,min(apf_fastest,svo_fastest))/10),XL(2)]) % min time=30.8 s
-l = legend({"APF, " + num2str(apf_successful) + " runs", ...
-    "SVO, " + num2str(svo_successful) + " runs", "EBG, " + num2str(ebg_successful) + " runs"},...
-    'Location','NorthEast')
+l = legend({"EBG, " + num2str(ebg_successful) + " runs"}, 'Location','NorthEast')
 l.FontSize = 8;
 xlabel('Elapsed time [s]', 'FontSize', 8)
 ylabel('Rounds [-]', 'FontSize', 8)
-filename = [folder 'Hist' '.fig'];
+filename = [folder 'Hist_EBG' '.fig'];
 saveas(figure(1),[pwd  filename]);
-filename = [folder 'Hist' '.pdf'];
+filename = [folder 'Hist_EBG' '.pdf'];
 % filename = fullfile([pwd filename])
 set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
 exportgraphics(gcf, [pwd filename]);
-
+close all
 
 
 %% heatmap plot

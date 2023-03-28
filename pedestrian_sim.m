@@ -4,7 +4,7 @@ dbstop if error
 
 
 %% global params
-random_seed = 4; % to test one specific setup - works only if runs==1
+random_seed = 82; % to test one specific setup - works only if runs==1
 dt = .1;
 dc = 2; % capture distance (= obstacle+vehicle radius)
 
@@ -40,11 +40,11 @@ target = [150;0];
 Tmax = 200;
 
 % run params
-runs = 100;
+runs = 1;
 max_time = 10000; % max runtime in seconds
 
 % save - careful, we do not check for overwrite!
-save_filename = 'APF_method'; % set to '' to skip saving. use single ' marks!
+save_filename = 'APF_82'; % set to '' to skip saving. use single ' marks!
 
 %% init
 parameters.NP = NP;
@@ -140,8 +140,9 @@ fprintf("Average time (successful runs):\t%.6f\n",mean(results(results>0)))
 fprintf("Unsuccessful runs:\t%.6f\n",(length(results(results<0))+ sum(isnan(results)) ) )
 
 %% save
-if runs>1 && length(save_filename)>1
-    save(save_filename,'results','velocity_distance_data');
+if runs==1 && length(save_filename)>1
+   % save(save_filename,'results','velocity_distance_data');
+   save(save_filename);
 end
 
 %% nested functions
@@ -212,7 +213,7 @@ figure(2), clf, hold on
 plot(target(1), target(2), 'k^')
 plot(squeeze(XE(1,1,:)),squeeze(XE(2,1,:)), 'color', 'b')
 for i=1:size(XP, 2)
-    plot(squeeze(XP(1,i,:)), squeeze(XP(2,i,:)), 'color', 'r')
+    plot(squeeze(XP(1,i,:)), squeeze(XP(2,i,:)), 'Color', [mod(i,2) mod(i,3)/3 mod(i,4)/4])
 end
 plot(squeeze(XE(1,1,end)),squeeze(XE(2,1,end)),'.','color','k');
 for i=1:size(XP, 2)
@@ -225,9 +226,9 @@ axis equal
 l=legend({'target', 'evader', 'pursuers'}, 'location', 'southwest')
 l.FontSize = 8;
 folder = '/Figures/';
-filename = [folder 'SVO_sim' '.fig'];
+filename = [folder 'aa' '.fig'];
 saveas(figure(1),[pwd  filename]);
-filename = [folder 'SVO_sim' '.pdf'];
+filename = [folder 'aa' '.pdf'];
 % filename = fullfile([pwd filename])
 set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
 exportgraphics(gcf, [pwd filename]);

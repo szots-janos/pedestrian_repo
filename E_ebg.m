@@ -48,7 +48,7 @@ classdef E_ebg < agent
             
             if any(V_acc < this.safety_distance)
                 % critical case
-                this.u.acceleration = min((this.safety_distance-V)./deltaV_v - 1);
+                this.u.acceleration = max(min((this.safety_distance-V)./deltaV_v - 1), -a_max);
                 this.u.steering = 0;
             else      
                 % target conditions
@@ -76,10 +76,10 @@ classdef E_ebg < agent
                 end
                 this.u.acceleration = u_v_max;
             end
-            
+
             % debug data
             if this.parameters.runs == 1
-                this.LOG=[this.LOG;this.u.steering,V_acc,this.u.acceleration,v,V];
+                %this.LOG=[this.LOG;this.u.steering,V_acc,this.u.acceleration,v,V];
             end
         end
     end

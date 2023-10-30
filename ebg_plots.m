@@ -173,3 +173,16 @@ legend({"Acceleration", "Velocity"}, 'Location','NorthWest')
 set(gcf, 'Units', 'Inches', 'Position', [0, 0, 3.5,3], 'PaperUnits', 'Inches', 'PaperSize', [3.5, 3])
 exportgraphics(gcf, [pwd filename]);
 
+%% variable switching time
+% n_cases = 5;
+% s_=[1,2,3,4,10];
+% prefix = "_2_";
+% suffix = "";
+% variable_description = "Average switching time [s]";
+% variable_short = "switching_time";
+
+variable_plots(5, [1,2,3,4,10], "_2_", "", "Average switching time [s]", "switching_time", "NorthEast");
+%%
+variable_plots(4, [10,20,30,40], "_", "_2_3", "Number of pedestrians [-]", "n_ped", "East");
+%%
+variable_plots(4, [0.5,1,2,3], "_", "_3", "Pedestrian speed [m/s]", "speed", "NorthEast");
